@@ -5,11 +5,12 @@ require 'Date'
 class Server
   def initialize(port)
     @tcp_server = TCPServer.new(port)
-    @count = 0
+    @hello_count = 0
+    @total_count = 0
   end
 
   def start
-    while true
+    loop do
       puts "Ready for a request"
       client = @tcp_server.accept
       request_lines = []
@@ -39,16 +40,18 @@ class Server
                   "server: ruby",
                   "content-type: text/html; charset=iso-8859-1",
                   "content-length: \r\n\r\n"].join("\r\n")
+        @total_count += 1
         client.puts headers
         client.puts output
       elsif path == '/hello'
-        output = "<html><head></head><body>Hello, World! (#{@count})#{response}</body></html>"
+        output = "<html><head></head><body>Hello, World! (#{@hello_count})#{response}</body></html>"
         headers = ["http/1.1 200 ok",
                   "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
                   "server: ruby",
                   "content-type: text/html; charset=iso-8859-1",
                   "content-length: \r\n\r\n"].join("\r\n")
-        @count += 1
+        @hello_count += 1
+        @total_count += 1
         client.puts headers
         client.puts output
       elsif path == '/datetime'
@@ -59,12 +62,24 @@ class Server
                   "server: ruby",
                   "content-type: text/html; charset=iso-8859-1",
                   "content-length: \r\n\r\n"].join("\r\n")
+        @total_count += 1
         client.puts headers
         client.puts output
+      elsif path == '/shutdown'
+        @total_count += 1
+        output = "<html><head></head><body>Total Requests: #{@total_count}#{response}</body></html>"
+        headers = ["http/1.1 200 ok",
+                  "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+                  "server: ruby",
+                  "content-type: text/html; charset=iso-8859-1",
+                  "content-length: \r\n\r\n"].join("\r\n")
+        client.puts headers
+        client.puts output
+        client.close
+        puts "\nResponse complete, exiting."
+        break
       end
-
       client.close
-      puts "\nResponse complete, exiting."
     end
   end
 end
