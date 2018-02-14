@@ -69,16 +69,32 @@ class Server
 
   def router
     if path == '/'
-      output('')
+      default_output
     elsif path == '/hello'
-      output("Hello, World! (#{@hello_count})")
-      @hello_count += 1
+      hello_world_message
     elsif path == '/datetime'
-      output(current_time)
+      datetime_message
     elsif path == '/shutdown'
-      output("Total Requests: #{@total_count}")
-      @client.close
-      @close = true
+      shutdown
     end
+  end
+
+  def default_output
+    output('This is the default output.')
+  end
+
+  def hello_world_message
+    output("Hello, World! (#{@hello_count})")
+    @hello_count += 1
+  end
+
+  def datetime_message
+    output(current_time)
+  end
+
+  def shutdown
+    output("Total Requests: #{@total_count}")
+    @client.close
+    @close = true
   end
 end

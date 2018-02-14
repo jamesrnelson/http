@@ -1,16 +1,11 @@
-require 'minitest/autorun'
-require 'minitest/pride'
-require './lib/server'
+require 'faraday'
+require './test/test_helper.rb'
 
 class ServerTest < Minitest::Test
-  def test_the_server_exists
-    server = Server.new(9292)
+  def test_default_path
+    response = Faraday.get('http://127.0.0.1:9292/')
 
-    assert_instance_of Server, server
-  end
-
-  def test_start_method
-
+    assert response.include?('This is the default output.')
   end
 
   def test_client_loop_gives_request_lines
