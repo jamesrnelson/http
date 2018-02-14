@@ -7,11 +7,13 @@ class Server
     @tcp_server = TCPServer.new(port)
     @hello_count = 0
     @total_count = 0
+    @close = false
     @request_lines = []
   end
 
   def start
     loop do
+      break if @close == true
       @client = @tcp_server.accept
       client_loop
       parser
@@ -34,8 +36,8 @@ class Server
   end
 
   def current_time
-    date = Date.today
-    date.strftime('%I:%M%p on %A, %B %-d, %Y.')
+    date = Time.now
+    date.strftime('%l:%M%p on %A, %B %-d, %Y.')
   end
 
   def headers
@@ -49,19 +51,19 @@ class Server
   def output(message)
     @total_count += 1
     @client.puts headers
-    @client.puts "<html><head></head><body>" + message + "</body></html>"
+    @client.puts '<html><head></head><body>' + message + '</body></html>'
     @client.puts response
   end
 
   def response
     "<pre>
-    Verb:     #{@request_lines[-9].split[0]}
-    Path:     #{@request_lines[-9].split[1]}
-    Protocol: #{@request_lines[-9].split[2]}
-    Host:     #{@request_lines[-8].split[1].split(':')[0]}
-    Port:     #{@request_lines[-8].split[1].split(':')[1]}
-    Origin:   #{@request_lines[-8].split[1].split(':')[0]}
-    Accept:   #{@request_lines[-3].split[1]}
+    Verb:     #{@request_lines[0].split[0]}
+    Path:     #{@request_lines[0].split[1]}
+    Protocol: #{@request_lines[0].split[2]}
+    Host:     #{@request_lines[1].split[1].split(':')[0]}
+    Port:     #{@request_lines[1].split[1].split(':')[1]}
+    Origin:   #{@request_lines[1].split[1].split(':')[0]}
+    Accept:   #{@request_lines[6].split[1]}
     </pre>"
   end
 
@@ -72,11 +74,11 @@ class Server
       output("Hello, World! (#{@hello_count})")
       @hello_count += 1
     elsif path == '/datetime'
-      output("#{current_time}")
+      output(current_time)
     elsif path == '/shutdown'
       output("Total Requests: #{@total_count}")
       @client.close
-      puts "\nResponse complete, exiting."
+      @close = true
     end
   end
 end
