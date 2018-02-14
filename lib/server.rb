@@ -16,7 +16,7 @@ class Server
       break if @close == true
       @client = @tcp_server.accept
       client_loop
-      parser
+      router
       @request_lines = []
       @client.close
     end
@@ -67,7 +67,7 @@ class Server
     </pre>"
   end
 
-  def parser
+  def router
     if path == '/'
       output('')
     elsif path == '/hello'
