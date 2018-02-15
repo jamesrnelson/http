@@ -8,17 +8,15 @@ class Server
     @hello_count = 0
     @total_count = 0
     @close = false
-    @request_lines = []
-    @message = ''
   end
 
   def start
     loop do
       break if @close == true
       @client = @tcp_server.accept
+      @request_lines = []
       client_loop
       router
-      @request_lines = []
       @client.close
     end
   end
@@ -46,40 +44,33 @@ class Server
     "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
     "server: ruby",
     "content-type: text/html; charset=iso-8859-1",
-    "content-length: #{@message.length + 25}\r\n\r\n"].join("\r\n")
+    "content-length: #{entire_message.length}\r\n\r\n"].join("\r\n")
   end
 
   def output
     @total_count += 1
     @client.puts headers
-    @client.puts '<html><head></head><body>' + @message + '</body></html>'
-    @client.puts response
-  end
-
-  def response
-    "<pre>
-    Verb:     #{@request_lines[0].split[0]}
-    Path:     #{@request_lines[0].split[1]}
-    Protocol: #{@request_lines[0].split[2]}
-    Host:     #{@request_lines[1].split[1].split(':')[0]}
-    Port:     #{@request_lines[1].split[1].split(':')[1]}
-    Origin:   #{@request_lines[1].split[1].split(':')[0]}
-    Accept:   #{@request_lines[6].split[1]}
-    </pre>"
+    @client.puts entire_message
   end
 
   def router
-    if path == '/'
-      default_output
-    elsif path == '/hello'
-      hello_world_message
-    elsif path == '/datetime'
-      datetime_message
-    elsif path == '/shutdown'
-      shutdown
-    elsif path.start_with?('/word_search')
-      search_dictionary
-    end
+    default_output if path == '/'
+    hello_world_message if path == '/hello'
+    datetime_message if path == '/datetime'
+    shutdown if path == '/shutdown'
+    search_dictionary if path.start_with?('/word_search')
+  end
+
+  def entire_message
+    '<html><head></head><body>' + @message + '</body></html>' \
+      "<pre>
+      Verb:     #{@request_lines[0].split[0]}
+      Path:     #{@request_lines[0].split[1]}
+      Protocol: #{@request_lines[0].split[2]}
+      Host:     #{@request_lines[1].split[1].split(':')[0]}
+      Port:     #{@request_lines[1].split[1].split(':')[1]}
+      Origin:   #{@request_lines[1].split[1].split(':')[0]}
+      </pre>"
   end
 
   def default_output

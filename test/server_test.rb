@@ -4,28 +4,27 @@ require './lib/server.rb'
 
 class ServerTest < Minitest::Test
   def test_default_path
-    skip
+
     request = Faraday.get('http://127.0.0.1:9292/')
 
     assert request.body.include?('This is the default output.')
   end
 
   def test_hello_world_path
-    skip
+
     request = Faraday.get('http://127.0.0.1:9292/hello')
 
     assert request.body.include?('Hello, World!')
   end
 
   def test_current_time_path
-    skip
+
     request = Faraday.get('http://127.0.0.1:9292/datetime')
 
     assert request.body.include?('2018')
   end
 
   def test_shutdown_output
-
     request = Faraday.get('http://127.0.0.1:9292/datetime')
 
     assert request.body.include?('Total Requests')
