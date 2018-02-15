@@ -7,6 +7,7 @@ class Server
     @tcp_server = TCPServer.new(port)
     @hello_count = 0
     @total_count = 0
+    @game_count = 0
     @close = false
   end
 
@@ -16,13 +17,9 @@ class Server
       @client = @tcp_server.accept
       @request_lines = []
       client_loop
-      router
+      verb_router
       @client.close
     end
-  end
-
-  def path
-    @request_lines[0].split[1]
   end
 
   def client_loop
@@ -32,6 +29,14 @@ class Server
     puts 'Got this request:'
     puts @request_lines.inspect
     puts 'Sending response.'
+  end
+
+  def path
+    @request_lines[0].split[1]
+  end
+
+  def verb
+    @request_lines[0].split[0]
   end
 
   def current_time
@@ -47,30 +52,27 @@ class Server
     "content-length: #{entire_message.length}\r\n\r\n"].join("\r\n")
   end
 
-  def output
-    @total_count += 1
-    @client.puts headers
-    @client.puts entire_message
+  def verb_router
+    post_router if verb == 'POST'
+    get_router if verb == 'GET'
   end
 
-  def router
+  def get_router
     default_output if path == '/'
     hello_world_message if path == '/hello'
     datetime_message if path == '/datetime'
     shutdown if path == '/shutdown'
     search_dictionary if path.start_with?('/word_search')
+    game_info if path == '/game'
   end
 
-  def entire_message
-    '<html><head></head><body>' + @message + '</body></html>' \
-      "<pre>
-      Verb:     #{@request_lines[0].split[0]}
-      Path:     #{@request_lines[0].split[1]}
-      Protocol: #{@request_lines[0].split[2]}
-      Host:     #{@request_lines[1].split[1].split(':')[0]}
-      Port:     #{@request_lines[1].split[1].split(':')[1]}
-      Origin:   #{@request_lines[1].split[1].split(':')[0]}
-      </pre>"
+  def post_router
+    if path == '/start_game'
+      @message = 'Good luck!'
+      output
+    elsif path == '/game'
+
+    end
   end
 
   def default_output
@@ -104,5 +106,31 @@ class Server
       @message = "#{word} is not a known word."
     end
     output
+  end
+
+  def game_info
+    @message = "You have made #{guess_count} guesses."
+  end
+
+  def entire_message
+    '<html><head></head><body>' + @message + '</body></html>' \
+      "<pre>
+      Verb:     #{@request_lines[0].split[0]}
+      Path:     #{@request_lines[0].split[1]}
+      Protocol: #{@request_lines[0].split[2]}
+      Host:     #{@request_lines[1].split[1].split(':')[0]}
+      Port:     #{@request_lines[1].split[1].split(':')[1]}
+      Origin:   #{@request_lines[1].split[1].split(':')[0]}
+      </pre>"
+  end
+
+  def output
+    @total_count += 1
+    @client.puts headers
+    @client.puts entire_message
+  end
+
+  def find_content_length
+
   end
 end
