@@ -9,6 +9,7 @@ class Server
     @total_count = 0
     @close = false
     @request_lines = []
+    @message = ''
   end
 
   def start
@@ -45,13 +46,13 @@ class Server
     "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
     "server: ruby",
     "content-type: text/html; charset=iso-8859-1",
-    "content-length: \r\n\r\n"].join("\r\n")
+    "content-length: #{@message.length + 25}\r\n\r\n"].join("\r\n")
   end
 
-  def output(message)
+  def output
     @total_count += 1
     @client.puts headers
-    @client.puts '<html><head></head><body>' + message + '</body></html>'
+    @client.puts '<html><head></head><body>' + @message + '</body></html>'
     @client.puts response
   end
 
@@ -76,25 +77,41 @@ class Server
       datetime_message
     elsif path == '/shutdown'
       shutdown
+    elsif path.start_with?('/word_search')
+      search_dictionary
     end
   end
 
   def default_output
-    output('This is the default output.')
+    @message = 'This is the default output.'
+    output
   end
 
   def hello_world_message
-    output("Hello, World! (#{@hello_count})")
+    @message = "Hello, World! (#{@hello_count})"
+    output
     @hello_count += 1
   end
 
   def datetime_message
-    output(current_time)
+    @message = current_time
+    output
   end
 
   def shutdown
-    output("Total Requests: #{@total_count}")
+    @message = "Total Requests: #{@total_count}"
+    output
     @client.close
     @close = true
+  end
+
+  def search_dictionary
+    word = path.split('=')[1]
+    if File.read('/usr/share/dict/words').include?(word)
+      @message = "#{word} is a known word."
+    else
+      @message = "#{word} is not a known word."
+    end
+    output
   end
 end

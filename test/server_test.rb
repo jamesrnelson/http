@@ -1,19 +1,34 @@
 require 'faraday'
 require './test/test_helper.rb'
+require './lib/server.rb'
 
 class ServerTest < Minitest::Test
   def test_default_path
-    response = Faraday.get('http://127.0.0.1:9292/')
+    skip
+    request = Faraday.get('http://127.0.0.1:9292/')
 
-    assert response.include?('This is the default output.')
+    assert request.body.include?('This is the default output.')
   end
 
-  def test_client_loop_gives_request_lines
+  def test_hello_world_path
+    skip
+    request = Faraday.get('http://127.0.0.1:9292/hello')
 
+    assert request.body.include?('Hello, World!')
   end
 
-  def test_current_time_method
+  def test_current_time_path
+    skip
+    request = Faraday.get('http://127.0.0.1:9292/datetime')
 
+    assert request.body.include?('2018')
+  end
+
+  def test_shutdown_output
+
+    request = Faraday.get('http://127.0.0.1:9292/datetime')
+
+    assert request.body.include?('Total Requests')
   end
 
   def test_path_comes_from_request_lines
@@ -37,14 +52,6 @@ class ServerTest < Minitest::Test
   end
 
   def test_output_for_hello_path_has_counter
-
-  end
-
-  def test_output_for_date_time_has_current_time
-
-  end
-
-  def test_output_for_shutdown_closes_server_and_has_total_count
 
   end
 
