@@ -1,11 +1,13 @@
 require 'socket'
 require 'pry'
 require 'Date'
+require './lib/router'
 
 class Server
-  attr_reader :request_lines
-  def initialize(port)
-    @tcp_server = TCPServer.new(port)
+  attr_reader :request_lines, :tcp_server
+  def initialize
+    @tcp_server = TCPServer.new(9292)
+    @router = Router.new(tcp_server)
     @hello_count = 0
     @total_count = 0
     @game_count = 0
@@ -18,7 +20,7 @@ class Server
       @client = @tcp_server.accept
       @request_lines = []
       client_loop
-      verb_router
+      @router.verb_router
       @client.close
     end
   end

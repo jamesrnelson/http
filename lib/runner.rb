@@ -1,4 +1,5 @@
 require './lib/server'
 
-server = Server.new(9292)
+server = Server.new
 server.start
+router = Router.new(tcp_server)
