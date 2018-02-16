@@ -62,8 +62,8 @@ class Output
   def record_guess
     @game_count += 1
     guess_body = server.client.read(content_length)
-    player_input = guess_body.split[-2]
-    @game.compare_answer_class(player_input)
+    player_input = guess_body.split[-2].to_i
+    @game.compare_values(player_input)
   end
 
   def game_info
@@ -100,7 +100,7 @@ class Output
   end
 
   def headers
-    ["http/1.1 200 ok",
+    ["http/1.1 #{status_code}",
     "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
     "server: ruby",
     "content-type: text/html; charset=iso-8859-1",
