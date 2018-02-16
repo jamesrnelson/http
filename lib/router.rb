@@ -2,22 +2,20 @@ require './lib/server'
 require './lib/output'
 require 'pry'
 
-
 # Takes in verb and path and directs to appropriate output
 class Router
-  attr_reader :server, :request_lines
+  attr_reader :server, :request_lines, :path, :router
   def initialize(server)
     @server = server
     @output = Output.new(server)
   end
 
   def path
-    @server.request_lines[0].split[1]
+    server.request_lines[0].split[1]
   end
 
   def verb
-    binding.pry
-    @server.request_lines[0].split[0]
+    server.request_lines[0].split[0]
   end
 
   def verb_router
