@@ -3,21 +3,23 @@ require 'pry'
 require 'Date'
 require './lib/router'
 
+# Starts the server and populates the request lines
 class Server
-  attr_reader :request_lines, :tcp_server
-  def initialize
-    @tcp_server = TCPServer.new(9292)
-    @router = Router.new(tcp_server)
+  attr_reader :request_lines, :server
+  def initialize(port)
+    @server = TCPServer.new(port)
+    @router = Router.new(self)
     @hello_count = 0
     @total_count = 0
     @game_count = 0
     @close = false
+    @request_lines = []
   end
 
   def start
     loop do
       break if @close == true
-      @client = @tcp_server.accept
+      @client = @server.accept
       @request_lines = []
       client_loop
       @router.verb_router

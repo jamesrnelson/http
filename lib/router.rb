@@ -3,23 +3,23 @@ require 'pry'
 
 # Takes in verb and path and directs to appropriate output
 class Router
-  attr_reader :tcp_server
-  def initialize(tcp_server)
-    @tcp_server = tcp_server
+  attr_reader :server, :request_lines
+  def initialize(server)
+    @server = server
   end
 
   def path
-    @tcp_server.request_lines[0].split[1]
+    @server.request_lines[0].split[1]
   end
 
   def verb
-    @tcp_server.request_lines[0].split[0]
+    binding.pry
+    @server.request_lines[0].split[0]
   end
 
   def verb_router
     router_post if verb == 'POST'
     router_get if verb == 'GET'
-    binding.pry
   end
 
   def router_get
