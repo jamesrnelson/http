@@ -70,8 +70,9 @@ class Server
     if path == '/start_game'
       @message = 'Good luck!'
       output
-    elsif path == '/game'
-
+    elsif path.start_with?('/game')
+      guess_body = @client.read(content_length)
+      binding.pry
     end
   end
 
@@ -130,7 +131,9 @@ class Server
     @client.puts entire_message
   end
 
-  def find_content_length
-
+  def content_length
+    @request_lines.find do |request|
+      request.include?('Content')
+    end.split(' ')[1].to_i
   end
 end
