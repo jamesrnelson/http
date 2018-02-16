@@ -34,10 +34,9 @@ class Router
 
   def router_post
     if path == '/start_game'
-      @message = 'Good luck!'
-      output
-    elsif path.start_with?('/game')
-      guess_body = @client.read(content_length)
+      @output.start_game
+    elsif path == '/game'
+      @output.record_guess
     end
   end
 end
