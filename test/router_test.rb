@@ -6,7 +6,7 @@ class RouterTest < Minitest::Test
 
   end
 
-  def test_path
+  def test_verb
 
   end
 end

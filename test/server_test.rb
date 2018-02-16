@@ -3,6 +3,14 @@ require './test/test_helper.rb'
 require './lib/server.rb'
 
 class ServerTest < Minitest::Test
+  # def setup
+  #   @server = Server.new(9292).start
+  # end
+  #
+  # def teardown
+  #   @server.close
+  # end
+
   def test_default_path
 
     request = Faraday.get('http://127.0.0.1:9292/')
