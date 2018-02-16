@@ -19,8 +19,17 @@ class Router
   end
 
   def verb_router
-    router_post if verb == 'POST'
-    router_get if verb == 'GET'
+    known_post_path if verb == 'POST'
+    known_get_path if verb == 'GET'
+  end
+
+  def known_get_path
+    if (path == '/' || path == '/hello' || path == '/datetime' ||
+      path == '/shutdown' || path == '/word_search' || path == '/game')
+      router_get
+    else
+      @output.unknown_path
+    end
   end
 
   def router_get
@@ -28,8 +37,16 @@ class Router
     @output.hello_world_message if path == '/hello'
     @output.datetime_message if path == '/datetime'
     @output.shutdown if path == '/shutdown'
-    @output.search_dictionary if path.start_with?('/word_search')
+    @output.search_dictionary if path == '/word_search'
     @output.game_info if path == '/game'
+  end
+
+  def known_post_path
+    if path == '/start_game' || path == '/game'
+      router_post
+    else
+      @output.unknown_path
+    end
   end
 
   def router_post
