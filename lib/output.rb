@@ -1,8 +1,14 @@
 require './lib/router'
+require './lib/server'
 
 # Takes instruction from router class about what to output
 class Output
-  def initialize
+  attr_reader :server
+  def initialize(server)
+    @server = server
+    @hello_count = 0
+    @total_count = 0
+    @game_count = 0
   end
 
   def default_output
@@ -45,17 +51,17 @@ class Output
   def entire_message
     '<html><head></head><body>' + @message + '</body></html>' \
       "<pre>
-      Verb:     #{@request_lines[0].split[0]}
-      Path:     #{@request_lines[0].split[1]}
-      Protocol: #{@request_lines[0].split[2]}
-      Host:     #{@request_lines[1].split[1].split(':')[0]}
-      Port:     #{@request_lines[1].split[1].split(':')[1]}
-      Origin:   #{@request_lines[1].split[1].split(':')[0]}
+      Verb:     #{@server.request_lines[0].split[0]}
+      Path:     #{@server.request_lines[0].split[1]}
+      Protocol: #{@server.request_lines[0].split[2]}
+      Host:     #{@server.request_lines[1].split[1].split(':')[0]}
+      Port:     #{@server.request_lines[1].split[1].split(':')[1]}
+      Origin:   #{@server.request_lines[1].split[1].split(':')[0]}
       </pre>"
   end
 
   def content_length
-    @request_lines.find do |request|
+    @server.request_lines.find do |request|
       request.include?('Content')
     end.split(' ')[1].to_i
   end
@@ -75,7 +81,7 @@ class Output
 
   def output
     @total_count += 1
-    @client.puts headers
-    @client.puts entire_message
+    @server.client.puts headers
+    @server.client.puts entire_message
   end
 end

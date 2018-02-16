@@ -1,9 +1,14 @@
 require './lib/server'
+require './lib/output'
+require 'pry'
+
 
 # Takes in verb and path and directs to appropriate output
 class Router
-  def initialize
-    @server = Server.new(9292)
+  attr_reader :server, :request_lines
+  def initialize(server)
+    @server = server
+    @output = Output.new(server)
   end
 
   def path
@@ -11,6 +16,7 @@ class Router
   end
 
   def verb
+    binding.pry
     @server.request_lines[0].split[0]
   end
 
@@ -20,12 +26,12 @@ class Router
   end
 
   def router_get
-    default_output if path == '/'
-    hello_world_message if path == '/hello'
-    datetime_message if path == '/datetime'
-    shutdown if path == '/shutdown'
-    search_dictionary if path.start_with?('/word_search')
-    game_info if path == '/game'
+    @output.default_output if path == '/'
+    @output.hello_world_message if path == '/hello'
+    @output.datetime_message if path == '/datetime'
+    @output.shutdown if path == '/shutdown'
+    @output.search_dictionary if path.start_with?('/word_search')
+    @output.game_info if path == '/game'
   end
 
   def router_post

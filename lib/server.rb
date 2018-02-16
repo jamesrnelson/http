@@ -1,24 +1,26 @@
 require 'socket'
 require 'pry'
 require 'Date'
+require './lib/router'
 
+# Starts the server and populates the request lines
 class Server
-  attr_reader :request_lines
+  attr_reader :request_lines, :server
   def initialize(port)
-    @tcp_server = TCPServer.new(port)
-    @hello_count = 0
-    @total_count = 0
-    @game_count = 0
+    @server = TCPServer.new(port)
+    @router = Router.new(self)
+    @client = nil
     @close = false
+    @request_lines = []
   end
 
   def start
     loop do
       break if @close == true
-      @client = @tcp_server.accept
+      @client = @server.accept
       @request_lines = []
       client_loop
-      verb_router
+      @router.verb_router
       @client.close
     end
   end
