@@ -9,9 +9,7 @@ class Server
   def initialize(port)
     @server = TCPServer.new(port)
     @router = Router.new(self)
-    @hello_count = 0
-    @total_count = 0
-    @game_count = 0
+    @client = nil
     @close = false
     @request_lines = []
   end
