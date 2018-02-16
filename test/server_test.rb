@@ -3,14 +3,6 @@ require './test/test_helper.rb'
 require './lib/server.rb'
 
 class ServerTest < Minitest::Test
-  # def setup
-  #   @server = Server.new(9292).start
-  # end
-  #
-  # def teardown
-  #   @server.close
-  # end
-
   def test_default_path
 
     request = Faraday.get('http://127.0.0.1:9292/')
@@ -33,33 +25,26 @@ class ServerTest < Minitest::Test
   end
 
   def test_shutdown_output
-    request = Faraday.get('http://127.0.0.1:9292/datetime')
+    request = Faraday.get('http://127.0.0.1:9292/shutdown')
 
     assert request.body.include?('Total')
   end
 
-  def test_path_comes_from_request_lines
+  def test_unknown_path
+    request = Faraday.get('http://127.0.0.1:9292/monsters')
 
+    assert request.body.include?('Unknown Path')
   end
 
-  def test_headers_method
+  def test_search_dictionary
+    request = Faraday.get('http://127.0.0.1:9292/word_search?param=monster')
 
+    assert request.body.include?('MONSTER is a known word.')
   end
 
-  def test_response_method
-
-  end
-
-  def test_router_directs_messages
-
-  end
-
-  def test_output_for_default_path
-
-  end
-
-  def test_output_for_hello_path_has_counter
-
-  end
-
+  # def test_post_to_start_game
+  #   request = Faraday.post('http://127.0.01:9292/start_game')
+  #
+  #   assert request.body.include?('Good luck!')
+  # end
 end
