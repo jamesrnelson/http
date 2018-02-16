@@ -27,7 +27,7 @@ class ServerTest < Minitest::Test
   def test_shutdown_output
     request = Faraday.get('http://127.0.0.1:9292/datetime')
 
-    assert request.body.include?('Total Requests')
+    assert request.body.include?('Total')
   end
 
   def test_path_comes_from_request_lines
