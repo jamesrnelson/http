@@ -94,9 +94,9 @@ class Server
 
   def shutdown
     @message = "Total Requests: #{@total_count}"
-    output
     @client.close
     @close = true
+    output
   end
 
   def search_dictionary
