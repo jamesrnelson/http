@@ -1,15 +1,20 @@
 require './lib/router'
 require './lib/server'
+require './lib/game'
 require 'pry'
 
 # Takes instruction from router class about what to output
 class Output
   attr_reader :server, :path, :router
+  attr_accessor :message
+
   def initialize(server)
     @server = server
     @hello_count = 0
     @total_count = 0
     @game_count = 0
+    @game = nil
+    @message = nil
   end
 
   def default_output
@@ -48,8 +53,27 @@ class Output
     output
   end
 
+  def start_game
+    @game = Game.new(server)
+    @message = 'Good luck!'
+    output
+  end
+
+  def record_guess
+    @game_count += 1
+    guess_body = server.client.read(content_length)
+    player_input = guess_body.split[-2]
+    @game.compare_answer_class(player_input)
+  end
+
   def game_info
-    @message = "You have made #{guess_count} guesses."
+    if @game_count.zero?
+      @message = "You have not started a game, or you have not made any guesses.
+      Please start a game by posting to the path '/start_game'."
+    else
+      @message = "You have made #{@game_count} guesses."
+    end
+    output
   end
 
   def entire_message
