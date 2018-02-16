@@ -48,4 +48,13 @@ class GameTest < Minitest::Test
 
     assert_equal expected, actual
   end
+
+  def test_game_tells_when_anser_is_too_low
+    game = Game.new(2, 2)
+
+    expected = 'Your guess was too low!'
+    actual = game.compare_answer_class(1)
+
+    assert_equal expected, actual
+  end
 end
