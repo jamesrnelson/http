@@ -13,6 +13,7 @@ class Game
       @output.message = 'Enter a valid whole number between 1 and 100.'
     elsif player_input == @random_number
       @output.message = 'OMG! You guessed the right number!'
+      'OMG! You guessed the right number!'
     elsif player_input > @random_number
       @output.message = "Your guess was #{player_input}. You're guess was too high!"
     elsif player_input < @random_number
