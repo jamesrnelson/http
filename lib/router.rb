@@ -3,6 +3,15 @@ require './lib/server'
 # Takes in verb and path and directs to appropriate output
 class Router
   def initialize
+    @server = Server.new(9292)
+  end
+
+  def path
+    @server.request_lines[0].split[1]
+  end
+
+  def verb
+    @server.request_lines[0].split[0]
   end
 
   def verb_router

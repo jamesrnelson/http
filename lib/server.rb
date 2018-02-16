@@ -3,6 +3,7 @@ require 'pry'
 require 'Date'
 
 class Server
+  attr_reader :request_lines
   def initialize(port)
     @tcp_server = TCPServer.new(port)
     @hello_count = 0
@@ -31,26 +32,28 @@ class Server
     puts 'Sending response.'
   end
 
-  def path
-    @request_lines[0].split[1]
-  end
+### Moved to router
+  # def path
+  #   @request_lines[0].split[1]
+  # end
+  #
+  # def verb
+  #   @request_lines[0].split[0]
+  # end
 
-  def verb
-    @request_lines[0].split[0]
-  end
-
-  def current_time
-    date = Time.now
-    date.strftime('%l:%M%p on %A, %B %-d, %Y.')
-  end
-
-  def headers
-    ["http/1.1 200 ok",
-    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
-    "server: ruby",
-    "content-type: text/html; charset=iso-8859-1",
-    "content-length: #{entire_message.length}\r\n\r\n"].join("\r\n")
-  end
+### Moved to Output
+  # def current_time
+  #   date = Time.now
+  #   date.strftime('%l:%M%p on %A, %B %-d, %Y.')
+  # end
+  #
+  # def headers
+  #   ["http/1.1 200 ok",
+  #   "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+  #   "server: ruby",
+  #   "content-type: text/html; charset=iso-8859-1",
+  #   "content-length: #{entire_message.length}\r\n\r\n"].join("\r\n")
+  # end
 
 ### Moved following methods to router class
   # def verb_router

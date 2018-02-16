@@ -54,15 +54,28 @@ class Output
       </pre>"
   end
 
-  def output
-    @total_count += 1
-    @client.puts headers
-    @client.puts entire_message
-  end
-
   def content_length
     @request_lines.find do |request|
       request.include?('Content')
     end.split(' ')[1].to_i
+  end
+
+  def current_time
+    date = Time.now
+    date.strftime('%l:%M%p on %A, %B %-d, %Y.')
+  end
+
+  def headers
+    ["http/1.1 200 ok",
+    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+    "server: ruby",
+    "content-type: text/html; charset=iso-8859-1",
+    "content-length: #{entire_message.length}\r\n\r\n"].join("\r\n")
+  end
+
+  def output
+    @total_count += 1
+    @client.puts headers
+    @client.puts entire_message
   end
 end
